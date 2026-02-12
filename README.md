@@ -1,4 +1,4 @@
-# 🌿 Eco-Route - Sustainable Transport Solutions
+#  Eco-Route - Sustainable Transport Solutions
 
 A React + Vite web application for eco-friendly fleet management and route optimization.
 
