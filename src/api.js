@@ -1,48 +1,19 @@
-/**
- * API Service - Handles all backend communication
- * PERSON 2: Only you should edit this file!
- */
+const API_BASE_URL = "http://127.0.0.1:8000";
 
-const API_BASE_URL = 'http://localhost:8000';
+export const analyzeRoute = async (start, end) => {
+  console.log("Frontend sending:", { start, end }); // Check your browser console
+  const response = await fetch("http://127.0.0.1:8000/api/analyze-route", {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      start: start.trim(), 
+      end: end.trim() 
+    }),
+  });
 
-/**
- * Analyze route and get eco-score
- * @param {string} start - Start location
- * @param {string} end - End location
- * @returns {Promise<Object>} Route analysis data
- */
-export async function analyzeRoute(start, end) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/analyze-route`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ start, end }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to analyze route');
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('API Error:', error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || 'Failed to analyze route');
   }
-}
-
-/**
- * Check if backend is running
- * @returns {Promise<boolean>}
- */
-export async function checkBackendHealth() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/health`);
-    return response.ok;
-  } catch (error) {
-    return false;
-  }
-}
+  return response.json();
+};

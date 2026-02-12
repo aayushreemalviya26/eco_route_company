@@ -1,67 +1,74 @@
-"""
-Eco-Score Algorithm - Calculates environmental score based on terrain and traffic
-"""
-from datetime import datetime
-from typing import List
+def calculate_eco_score(elevations, distance_km):
+    # 1. Calculate the total vertical climb (Positive elevation changes)
+    total_climb = sum([max(0, elevations[i+1] - elevations[i]) for i in range(len(elevations)-1)])
+    
+    # 2. CALIBRATION: Reduce sensitivity so flat roads don't get high penalties
+    # Old: elevation_coeff = 2.0 (Too high!)
+    # New: Try 0.3 to 0.5. This means 1 meter of climb = 0.3 points penalty.
+    elevation_coeff = 0.4 
+    
+    terrain_penalty = total_climb * elevation_coeff
+    
+    # 3. Increase the dynamic range
+    # Instead of capping at 40 immediately, let's allow it to vary
+    terrain_penalty = min(terrain_penalty, 60) 
 
-def calculate_eco_score(
-    elevations: List[float],
-    distance_km: float,
-    current_hour: int = None
-) -> dict:
-    """
-    Calculate eco-score based on terrain difficulty and traffic
-    
-    Args:
-        elevations: List of elevation points in meters
-        distance_km: Total route distance in kilometers
-        current_hour: Hour of day (0-23), defaults to current time
-    
-    Returns:
-        Dict with eco_score, co2_saved, terrain_penalty, traffic_penalty
-    """
-    if current_hour is None:
-        current_hour = datetime.now().hour
-    
+    # 4. Base Score Logic
     base_score = 100
+    traffic_penalty = 5 # Constant for now
     
-    # === TERRAIN PENALTY ===
-    terrain_penalty = 0
-    elevation_coeff = 2.0  # Penalty per meter of climb
+    final_score = base_score - traffic_penalty - terrain_penalty
     
-    for i in range(1, len(elevations)):
-        altitude_change = elevations[i] - elevations[i-1]
-        if altitude_change > 0:  # Only penalize uphill
-            terrain_penalty += altitude_change * elevation_coeff
-    
-    # Cap terrain penalty at 40 points
-    terrain_penalty = min(terrain_penalty, 40)
-    
-    # === TRAFFIC PENALTY ===
-    traffic_penalty = 0
-    rush_hours = [7, 8, 9, 17, 18, 19]  # Morning and evening rush
-    
-    if current_hour in rush_hours:
-        traffic_penalty = 25
-    elif 10 <= current_hour <= 16:  # Midday - moderate traffic
-        traffic_penalty = 10
-    else:  # Night/early morning - low traffic
-        traffic_penalty = 5
-    
-    # === CALCULATE FINAL SCORE ===
-    eco_score = base_score - terrain_penalty - traffic_penalty
-    eco_score = max(eco_score, 0)  # Don't go below 0
-    
-    # === CO2 SAVINGS CALCULATION ===
-    # Average car emits ~120g CO2 per km
-    # Cycling saves this amount
-    co2_saved_grams = distance_km * 120
-    co2_saved_kg = co2_saved_grams / 1000
-    
+    # Calculate CO2 (120g/km average)
+    co2_saved = round(distance_km * 0.12, 2)
+
     return {
-        "eco_score": round(eco_score, 1),
-        "co2_saved_kg": round(co2_saved_kg, 2),
+        "eco_score": max(10, int(final_score)),
+        "co2_saved_kg": co2_saved,
         "terrain_penalty": round(terrain_penalty, 1),
         "traffic_penalty": traffic_penalty,
+        "distance_km": round(distance_km, 2)
+    }
+
+from datetime import datetime
+
+def calculate_eco_score(elevations, distance_km):
+    # 1. CALCULATE INCLINE PENALTY
+    # We sum up the total vertical meters climbed
+    total_climb = sum([max(0, elevations[i+1] - elevations[i]) for i in range(len(elevations)-1)])
+    
+    # CALIBRATION: Use 0.02 instead of 0.05. 
+    # This means 500m climb = 10 pts penalty | 2500m climb = 50 pts penalty.
+    incline_penalty = total_climb * 0.02
+    incline_penalty = min(incline_penalty, 50) # Cap it at 50 so it doesn't kill the score
+
+    # 2. CALCULATE TRAFFIC PENALTY (Heuristic)
+    current_hour = datetime.now().hour
+    if (8 <= current_hour <= 10) or (17 <= current_hour <= 20):
+        traffic_penalty = 30
+        traffic_label = "Heavy (Rush Hour)"
+    elif (11 <= current_hour <= 16) or (21 <= current_hour <= 23):
+        traffic_penalty = 15
+        traffic_label = "Moderate"
+    else:
+        traffic_penalty = 5
+        traffic_label = "Low (Clear)"
+
+    # 3. FINAL FORMULA
+    # Score = 100 - Incline - Traffic
+    final_score = 100 - incline_penalty - traffic_penalty
+    
+    # Ensure a minimum score for long distances
+    final_score = max(10, int(final_score))
+
+    # CO2 saved calculation (Standard 120g/km)
+    co2_saved = round(distance_km * 0.12, 2)
+
+    return {
+        "eco_score": final_score,
+        "co2_saved_kg": co2_saved,
+        "terrain_penalty": round(incline_penalty, 1),
+        "traffic_penalty": traffic_penalty,
+        "traffic_condition": traffic_label,
         "distance_km": round(distance_km, 2)
     }

@@ -1,38 +1,37 @@
-"""
-Geocoding Service - Converts location names to coordinates using Nominatim
-"""
 import httpx
 from typing import Tuple, Optional
 
 async def geocode_location(location: str) -> Optional[Tuple[float, float]]:
     """
-    Convert location string to (latitude, longitude)
-    
-    Args:
-        location: Address or place name (e.g., "Delhi, India")
-    
-    Returns:
-        Tuple of (lat, lon) or None if not found
+    Using ArcGIS Geocoder - More reliable for local dev testing.
     """
-    url = "https://nominatim.openstreetmap.org/search"
+    url = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
     params = {
-        "q": location,
-        "format": "json",
-        "limit": 1
-    }
-    headers = {
-        "User-Agent": "EcoRouteHackathon/1.0"
+        "f": "json",
+        "singleLine": location,
+        "maxLocations": 1
     }
     
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(url, params=params, headers=headers, timeout=10.0)
-            response.raise_for_status()
+            # ArcGIS generally doesn't require complex User-Agents
+            response = await client.get(url, params=params, timeout=10.0)
+            
+            if response.status_code != 200:
+                print(f"ARCGIS ERROR: Status {response.status_code}")
+                return None
+
             data = response.json()
             
-            if data:
-                return (float(data[0]["lat"]), float(data[0]["lon"]))
+            if data and data.get("candidates"):
+                location_data = data["candidates"][0]["location"]
+                # ArcGIS returns x (lon) and y (lat)
+                lat, lon = location_data["y"], location_data["x"]
+                print(f"Successfully geocoded '{location}' to ({lat}, {lon})")
+                return (float(lat), float(lon))
+                
+            print(f"No results found for: {location}")
             return None
         except Exception as e:
-            print(f"Geocoding error: {e}")
+            print(f"GEOCODE EXCEPTION: {str(e)}")
             return None

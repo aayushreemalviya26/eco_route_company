@@ -1,0 +1,258 @@
+.plan-route-container {
+  display: flex;
+  height: 90vh; /* Critical: Parent must have height */
+  padding: 20px;
+  gap: 20px;
+  background: #f4f7f6;
+}
+
+.search-card {
+  width: 350px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.map-card {
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%; /* Critical: Must fill parent */
+  border: 1px solid #ddd;
+}
+
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+
+.calc-btn {
+  width: 100%;
+  padding: 12px;
+  background: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.input-group {
+  position: relative; /* Key for positioning the list */
+}
+
+.autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.autocomplete-list li {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.autocomplete-list li:hover {
+  background-color: #f0fff4;
+  color: #2ecc71;
+}
+.optimal-badge {
+  background: #e6fffa;
+  color: #2c7a7b;
+  border: 1px solid #81e6d9;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.penalty-val {
+  color: #e53e3e; /* Red for penalties */
+  font-weight: bold;
+}
+
+.stat-footer {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #718096;
+  text-align: right;
+  border-top: 1px solid #edf2f7;
+  padding-top: 5px;
+}
+
+/* Container styling */
+.eco-result-card {
+  margin-top: 25px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px; /* Sharper corners for a more serious look */
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Container - Gives it that floating card look */
+.eco-result-card {
+  margin-top: 25px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  max-width: 450px; /* Keeps it from stretching too wide */
+}
+
+/* Header Badge */
+.eco-badge-premium {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #065f46;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+/* Efficiency Score Section */
+.eco-score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.eco-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.eco-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.eco-value small {
+  font-size: 1rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* THE PROGRESS BAR - This was missing height/background */
+.eco-progress-container {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 25px;
+}
+
+.eco-progress-bar {
+  height: 100%;
+  transition: width 1s ease-in-out;
+}
+
+/* STATS GRID - Forces items to stay side-by-side */
+.eco-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.eco-stat-box {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.stat-content label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.stat-number {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #e11d48; /* Crimson for penalties */
+  margin: 0;
+}
+
+.stat-tag {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Footer Metrics - Bottom green/blue pills */
+.eco-footer-metrics {
+  display: flex;
+  gap: 10px;
+}
+
+.metric-pill {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-pill.co2 { background: #f0fdf4; border-left: 4px solid #10b981; }
+.metric-pill.distance { background: #f8fafc; border-left: 4px solid #64748b; }
+
+.metric-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.metric-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+/* Icon Placeholders (Replacing Emojis) */
+.stat-visual {
+  width: 10px;
+  height: 10px;
+  background: #cbd5e1;
+}
+.traffic-icon { border-radius: 50%; } /* Circle for traffic */
+.terrain-icon { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); } /* Triangle for terrain */
